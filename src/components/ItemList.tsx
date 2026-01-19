@@ -6,13 +6,21 @@ interface ItemListProps {
   items: Item[];
   filtroCategoria: Categoria | 'todas';
   onEstadoChange: (itemId: string, estado: EstadoItem) => void;
+  onNombreChange: (itemId: string, nombre: string) => void;
   onDelete: (itemId: string) => void;
 }
+
+const ESTADO_ORDER: Record<EstadoItem, number> = {
+  no_hay: 0,
+  hay_poco: 1,
+  hay: 2,
+};
 
 export function ItemList({
   items,
   filtroCategoria,
   onEstadoChange,
+  onNombreChange,
   onDelete,
 }: ItemListProps) {
   const itemsFiltrados =
@@ -20,7 +28,11 @@ export function ItemList({
       ? items
       : items.filter((item) => item.categoria === filtroCategoria);
 
-  if (itemsFiltrados.length === 0) {
+  const itemsOrdenados = [...itemsFiltrados].sort((a, b) => {
+    return ESTADO_ORDER[a.estado] - ESTADO_ORDER[b.estado];
+  });
+
+  if (itemsOrdenados.length === 0) {
     return (
       <div className={styles.empty}>
         <p>No hay items{filtroCategoria !== 'todas' ? ' en esta categoria' : ''}.</p>
@@ -31,11 +43,12 @@ export function ItemList({
 
   return (
     <div className={styles.list}>
-      {itemsFiltrados.map((item) => (
+      {itemsOrdenados.map((item) => (
         <ItemCard
           key={item.id}
           item={item}
           onEstadoChange={onEstadoChange}
+          onNombreChange={onNombreChange}
           onDelete={onDelete}
         />
       ))}

@@ -25,6 +25,7 @@ function App() {
     error: errorItems,
     agregarItem,
     actualizarEstado,
+    actualizarNombre,
     eliminarItem,
   } = useItems(listaId);
 
@@ -97,6 +98,7 @@ function App() {
           items={items}
           filtroCategoria={filtroCategoria}
           onEstadoChange={actualizarEstado}
+          onNombreChange={actualizarNombre}
           onDelete={eliminarItem}
         />
       </section>

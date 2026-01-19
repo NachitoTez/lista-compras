@@ -120,12 +120,26 @@ export function useItems(listaId: string | null) {
     }
   }, []);
 
+  const actualizarNombre = useCallback(async (itemId: string, nombre: string) => {
+    try {
+      const { error } = await supabase
+        .from('items')
+        .update({ nombre })
+        .eq('id', itemId);
+
+      if (error) throw error;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al actualizar nombre');
+    }
+  }, []);
+
   return {
     items,
     loading,
     error,
     agregarItem,
     actualizarEstado,
+    actualizarNombre,
     eliminarItem,
   };
 }
