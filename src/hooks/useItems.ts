@@ -111,12 +111,16 @@ export function useItems(listaId: string | null) {
   }, []);
 
   const eliminarItem = useCallback(async (itemId: string) => {
+    // Optimistic update - remove immediately from UI
+    setItems((prev) => prev.filter((item) => item.id !== itemId));
+
     try {
       const { error } = await supabase.from('items').delete().eq('id', itemId);
 
       if (error) throw error;
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al eliminar item');
+      // TODO: could restore item on error, but keeping simple for now
     }
   }, []);
 
