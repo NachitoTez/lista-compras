@@ -50,10 +50,19 @@ src/
 - Creado schema SQL para Supabase
 - Configurado vercel.json para SPA routing
 - Build exitoso
+- Deployado a Vercel: https://lista-compras-beta-three.vercel.app
+- Repo GitHub: https://github.com/NachitoTez/lista-compras
+
+### 2025-01-19 - UX Improvements
+- Edición inline de nombres (click para editar, Enter/Escape)
+- Cards con fondo de color según estado (rgba con opacidad sutil)
+- Ordenamiento por estado: no_hay → hay_poco → hay
+- Indicador de estado simplificado: 3 dots clickeables
+- Botón eliminar mejorado (× en gris, rojo en hover)
 
 ## Estado Actual
-✅ Frontend completo y compilando
-⏳ Pendiente: Usuario debe configurar Supabase con credenciales reales
+✅ App funcionando en producción
+✅ Realtime sync funcionando entre dispositivos
 
 ## Comandos Útiles
 ```bash
