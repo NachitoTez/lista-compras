@@ -99,9 +99,15 @@ export function useItems(listaId: string | null) {
 
   const actualizarEstado = useCallback(async (itemId: string, estado: EstadoItem) => {
     try {
+      // Si cambia a "hay", actualizar ultima_compra
+      const updateData: { estado: EstadoItem; ultima_compra?: string } = { estado };
+      if (estado === 'hay') {
+        updateData.ultima_compra = new Date().toISOString();
+      }
+
       const { error } = await supabase
         .from('items')
-        .update({ estado })
+        .update(updateData)
         .eq('id', itemId);
 
       if (error) throw error;

@@ -12,6 +12,7 @@ export interface Lista {
   id: string;
   nombre: string;
   created_at: string;
+  configuracion?: Record<string, unknown>;
 }
 
 export interface Item {
@@ -21,6 +22,7 @@ export interface Item {
   estado: EstadoItem;
   categoria: Categoria;
   created_at: string;
+  ultima_compra?: string;
 }
 
 export interface NuevoItem {

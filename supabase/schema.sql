@@ -32,3 +32,17 @@ CREATE POLICY "Allow all operations on listas" ON listas
 -- Politicas permisivas para items
 CREATE POLICY "Allow all operations on items" ON items
   FOR ALL USING (true) WITH CHECK (true);
+
+-- ============================================
+-- MIGRACIONES
+-- ============================================
+
+-- Migración 2025-01-20: Preparar terreno para features futuros
+-- Ejecutar manualmente en Supabase SQL Editor:
+
+-- Agregar campo ultima_compra a items (para tracking de frescura)
+-- Se actualiza cuando un item pasa a estado "hay"
+ALTER TABLE items ADD COLUMN IF NOT EXISTS ultima_compra TIMESTAMPTZ;
+
+-- Agregar configuracion JSON a listas (para feature flags futuros)
+ALTER TABLE listas ADD COLUMN IF NOT EXISTS configuracion JSONB DEFAULT '{}';
