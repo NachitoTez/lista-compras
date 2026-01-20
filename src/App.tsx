@@ -5,6 +5,7 @@ import { AddItem } from './components/AddItem';
 import { ItemList } from './components/ItemList';
 import { CategoryFilter } from './components/CategoryFilter';
 import { ShareButton } from './components/ShareButton';
+import { HomePage } from './components/HomePage';
 import type { Categoria } from './types';
 import './App.css';
 
@@ -29,18 +30,6 @@ function App() {
     eliminarItem,
   } = useItems(listaId);
 
-  // Si estamos en la raiz, crear nueva lista
-  useEffect(() => {
-    if (window.location.pathname === '/' || window.location.pathname === '') {
-      crearLista().then((nuevaLista) => {
-        if (nuevaLista) {
-          window.history.pushState({}, '', `/lista/${nuevaLista.id}`);
-          setListaId(nuevaLista.id);
-        }
-      });
-    }
-  }, [crearLista]);
-
   // Handle browser back/forward
   useEffect(() => {
     const handlePopState = () => {
@@ -49,6 +38,24 @@ function App() {
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+
+  const handleCreateList = async () => {
+    const nuevaLista = await crearLista();
+    if (nuevaLista) {
+      window.history.pushState({}, '', `/lista/${nuevaLista.id}`);
+      setListaId(nuevaLista.id);
+    }
+  };
+
+  const handleJoinList = (id: string) => {
+    window.history.pushState({}, '', `/lista/${id}`);
+    setListaId(id);
+  };
+
+  // Show home page if no list selected
+  if (!listaId) {
+    return <HomePage onCreateList={handleCreateList} onJoinList={handleJoinList} />;
+  }
 
   const loading = loadingLista || loadingItems;
   const error = errorLista || errorItems;
@@ -65,14 +72,6 @@ function App() {
     return (
       <div className="container">
         <div className="error">Error: {error}</div>
-      </div>
-    );
-  }
-
-  if (!listaId) {
-    return (
-      <div className="container">
-        <div className="loading">Creando lista...</div>
       </div>
     );
   }
