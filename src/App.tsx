@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useList } from './hooks/useList';
 import { useItems } from './hooks/useItems';
 import { AddItem } from './components/AddItem';
@@ -19,7 +19,7 @@ function App() {
   const [listaId, setListaId] = useState<string | null>(getListaIdFromUrl);
   const [filtroCategoria, setFiltroCategoria] = useState<Categoria | 'todas'>('todas');
 
-  const { lista, loading: loadingLista, error: errorLista, crearLista } = useList(listaId);
+  const { lista, loading: loadingLista, error: errorLista, crearLista, actualizarNombre: actualizarNombreLista } = useList(listaId);
   const {
     items,
     loading: loadingItems,
@@ -29,6 +29,19 @@ function App() {
     actualizarNombre,
     eliminarItem,
   } = useItems(listaId);
+
+  // State for inline editing of list name
+  const [editingNombre, setEditingNombre] = useState(false);
+  const [nombreInput, setNombreInput] = useState('');
+  const nombreInputRef = useRef<HTMLInputElement>(null);
+
+  // Focus input when editing starts
+  useEffect(() => {
+    if (editingNombre && nombreInputRef.current) {
+      nombreInputRef.current.focus();
+      nombreInputRef.current.select();
+    }
+  }, [editingNombre]);
 
   // Handle browser back/forward
   useEffect(() => {
@@ -50,6 +63,32 @@ function App() {
   const handleJoinList = (id: string) => {
     window.history.pushState({}, '', `/lista/${id}`);
     setListaId(id);
+  };
+
+  const handleGoHome = () => {
+    window.history.pushState({}, '', '/');
+    setListaId(null);
+  };
+
+  const handleStartEditNombre = () => {
+    setNombreInput(lista?.nombre || '');
+    setEditingNombre(true);
+  };
+
+  const handleSaveNombre = () => {
+    const trimmed = nombreInput.trim();
+    if (trimmed && trimmed !== lista?.nombre && listaId) {
+      actualizarNombreLista(listaId, trimmed);
+    }
+    setEditingNombre(false);
+  };
+
+  const handleNombreKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSaveNombre();
+    } else if (e.key === 'Escape') {
+      setEditingNombre(false);
+    }
   };
 
   // Show home page if no list selected
@@ -79,7 +118,26 @@ function App() {
   return (
     <div className="container">
       <header className="header">
-        <h1>{lista?.nombre || 'Lista de Compras'}</h1>
+        <button className="back-button" onClick={handleGoHome} title="Volver al inicio">
+          ← Inicio
+        </button>
+        <div className="title-container">
+          {editingNombre ? (
+            <input
+              ref={nombreInputRef}
+              type="text"
+              className="title-input"
+              value={nombreInput}
+              onChange={(e) => setNombreInput(e.target.value)}
+              onBlur={handleSaveNombre}
+              onKeyDown={handleNombreKeyDown}
+            />
+          ) : (
+            <h1 onClick={handleStartEditNombre} title="Click para editar">
+              {lista?.nombre || 'Lista de Compras'}
+            </h1>
+          )}
+        </div>
         <ShareButton />
       </header>
 

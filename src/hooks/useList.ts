@@ -52,5 +52,19 @@ export function useList(listaId: string | null) {
     }
   }, []);
 
-  return { lista, loading, error, crearLista };
+  const actualizarNombre = useCallback(async (listaId: string, nombre: string) => {
+    try {
+      const { error } = await supabase
+        .from('listas')
+        .update({ nombre })
+        .eq('id', listaId);
+
+      if (error) throw error;
+      setLista((prev) => prev ? { ...prev, nombre } : null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al actualizar nombre de lista');
+    }
+  }, []);
+
+  return { lista, loading, error, crearLista, actualizarNombre };
 }

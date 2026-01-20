@@ -112,7 +112,11 @@ export function ItemCard({ item, onEstadoChange, onNombreChange, onDelete }: Ite
 
       <button
         className={styles.deleteBtn}
-        onClick={() => onDelete(item.id)}
+        onClick={() => {
+          if (window.confirm(`¿Eliminar "${item.nombre}"?`)) {
+            onDelete(item.id);
+          }
+        }}
         title="Eliminar"
       >
         ×
